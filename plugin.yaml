@@ -1,0 +1,17 @@
+schema: mcpg.dev/plugin/v1
+id: dev.mcpg.identity.basic
+name: HTTP Basic Identity Resolver
+license: Apache-2.0
+description: |
+  Resolves caller identity from `Authorization: Basic <b64(username:password)>`
+  headers against an operator-supplied user registry. Each registry
+  entry maps a username to a password hash (argon2 or bcrypt PHC
+  string), enforced via constant-time hash verification. Plaintext
+  passwords NEVER appear in operator config — operators store hashes
+  generated out-of-band. Reuses the gateway's secret-resolver
+  so operators reference hash bytes via `${env.VAR}` / `vault://...`
+  / `file:///...`. Pure offline lookup; no outbound network.
+class: identity_provider
+runtime: native-cdylib-v1
+protocol_version: "1.0"
+required_capabilities: []
