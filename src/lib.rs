@@ -56,7 +56,7 @@ fn record_resolve_outcome(result: &IdentityResolution, elapsed: std::time::Durat
             elapsed_ms = %elapsed.as_millis(),
             "basic identity: no credential — fall through"
         ),
-        IdentityResolution::Invalid { reason } => warn!(
+        IdentityResolution::Invalid { reason, .. } => warn!(
             reason = %reason,
             elapsed_ms = %elapsed.as_millis(),
             "basic identity: invalid credential"
@@ -245,6 +245,7 @@ fn resolve_with_now(
         Err(_) => {
             return IdentityResolution::Invalid {
                 reason: "malformed Basic credential (base64)".into(),
+                response_headers: Vec::new(),
             };
         }
     };
@@ -253,12 +254,14 @@ fn resolve_with_now(
         Err(_) => {
             return IdentityResolution::Invalid {
                 reason: "malformed Basic credential (non-utf8)".into(),
+                response_headers: Vec::new(),
             };
         }
     };
     let Some(colon_idx) = decoded_str.find(':') else {
         return IdentityResolution::Invalid {
             reason: "malformed Basic credential (no colon)".into(),
+            response_headers: Vec::new(),
         };
     };
     let username = &decoded_str[..colon_idx];
@@ -266,11 +269,13 @@ fn resolve_with_now(
     if username.is_empty() {
         return IdentityResolution::Invalid {
             reason: "empty username".into(),
+            response_headers: Vec::new(),
         };
     }
     if password.is_empty() {
         return IdentityResolution::Invalid {
             reason: "empty password".into(),
+            response_headers: Vec::new(),
         };
     }
     let lookup_key = match inner.username_case {
@@ -284,17 +289,20 @@ fn resolve_with_now(
     else {
         return IdentityResolution::Invalid {
             reason: "unknown user".into(),
+            response_headers: Vec::new(),
         };
     };
 
     if !verify_password(&user.password_hash, user.hash_kind, password) {
         return IdentityResolution::Invalid {
             reason: "password mismatch".into(),
+            response_headers: Vec::new(),
         };
     }
     if !user.enabled {
         return IdentityResolution::Invalid {
             reason: "user disabled".into(),
+            response_headers: Vec::new(),
         };
     }
     if let Some(expires_at) = user.expires_at
@@ -302,6 +310,7 @@ fn resolve_with_now(
     {
         return IdentityResolution::Invalid {
             reason: "user expired".into(),
+            response_headers: Vec::new(),
         };
     }
 
@@ -487,7 +496,7 @@ mod tests {
             now(),
         );
         match r {
-            IdentityResolution::Invalid { reason } => assert!(reason.contains("base64")),
+            IdentityResolution::Invalid { reason, .. } => assert!(reason.contains("base64")),
             other => panic!("unexpected: {other:?}"),
         }
     }
@@ -499,7 +508,7 @@ mod tests {
         }));
         let r = resolve_with_now(&plugin.inner, &auth_header("alicepasswordnocolon"), now());
         match r {
-            IdentityResolution::Invalid { reason } => assert!(reason.contains("no colon")),
+            IdentityResolution::Invalid { reason, .. } => assert!(reason.contains("no colon")),
             other => panic!("unexpected: {other:?}"),
         }
     }
@@ -511,7 +520,7 @@ mod tests {
         }));
         let r = resolve_with_now(&plugin.inner, &auth_header("bob:hunter2"), now());
         match r {
-            IdentityResolution::Invalid { reason } => assert_eq!(reason, "unknown user"),
+            IdentityResolution::Invalid { reason, .. } => assert_eq!(reason, "unknown user"),
             other => panic!("unexpected: {other:?}"),
         }
     }
@@ -523,7 +532,7 @@ mod tests {
         }));
         let r = resolve_with_now(&plugin.inner, &auth_header("alice:wrongpass"), now());
         match r {
-            IdentityResolution::Invalid { reason } => assert_eq!(reason, "password mismatch"),
+            IdentityResolution::Invalid { reason, .. } => assert_eq!(reason, "password mismatch"),
             other => panic!("unexpected: {other:?}"),
         }
     }
@@ -545,7 +554,7 @@ mod tests {
         }));
         let r = resolve_with_now(&plugin.inner, &auth_header("alice:hunter2"), now());
         match r {
-            IdentityResolution::Invalid { reason } => assert_eq!(reason, "unknown user"),
+            IdentityResolution::Invalid { reason, .. } => assert_eq!(reason, "unknown user"),
             other => panic!("unexpected: {other:?}"),
         }
     }
@@ -561,7 +570,7 @@ mod tests {
         }));
         let r = resolve_with_now(&plugin.inner, &auth_header("alice:hunter2"), now());
         match r {
-            IdentityResolution::Invalid { reason } => assert_eq!(reason, "user disabled"),
+            IdentityResolution::Invalid { reason, .. } => assert_eq!(reason, "user disabled"),
             other => panic!("unexpected: {other:?}"),
         }
     }
@@ -577,7 +586,7 @@ mod tests {
         }));
         let r = resolve_with_now(&plugin.inner, &auth_header("alice:hunter2"), now());
         match r {
-            IdentityResolution::Invalid { reason } => assert_eq!(reason, "user expired"),
+            IdentityResolution::Invalid { reason, .. } => assert_eq!(reason, "user expired"),
             other => panic!("unexpected: {other:?}"),
         }
     }
