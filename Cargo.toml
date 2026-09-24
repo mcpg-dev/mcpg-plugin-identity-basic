@@ -1,6 +1,6 @@
 [package]
 name = "mcpg-plugin-identity-basic"
-version = "0.1.0-alpha.31"
+version = "0.1.0-alpha.37"
 license = "Apache-2.0"
 edition = "2024"
 description = "HTTP Basic auth identity plugin for MCPG gateway (dev.mcpg.identity.basic)"
@@ -9,10 +9,10 @@ description = "HTTP Basic auth identity plugin for MCPG gateway (dev.mcpg.identi
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-mcpg-plugin-protocol = { git = "https://github.com/mcpg-dev/mcpg-plugin-protocol", tag = "v0.1.0-beta.29", version = "=0.1.0-beta.29" }
-mcpg-plugin-sdk = { git = "https://github.com/mcpg-dev/mcpg-plugin-sdk", tag = "v0.1.0-beta.30", version = "=0.1.0-beta.30" }
+mcpg-plugin-protocol = { git = "https://github.com/mcpg-dev/mcpg-plugin-protocol", tag = "v0.1.0-beta.35", version = "=0.1.0-beta.35" }
+mcpg-plugin-sdk = { git = "https://github.com/mcpg-dev/mcpg-plugin-sdk", tag = "v0.1.0-beta.36", version = "=0.1.0-beta.36" }
 async-trait = "0.1"
-base64 = "0.22"
+base64 = "0.23"
 metrics = "0.24"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
@@ -22,9 +22,9 @@ tracing = "0.1"
 
 # Password hashing — argon2 covers the modern recommendation,
 # bcrypt covers htpasswd-migrated deployments. Both pure-Rust.
-argon2 = "0.5"
-bcrypt = "0.16"
-password-hash = "0.5"
+argon2 = "0.6"
+bcrypt = "0.19"
+password-hash = "0.6"
 
 [features]
 default = ["cdylib-export"]

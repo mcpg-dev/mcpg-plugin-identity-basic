@@ -25,7 +25,7 @@ use mcpg_plugin_protocol::{
 };
 use mcpg_plugin_sdk::declare_plugin;
 use mcpg_plugin_sdk::ffi::SyncIdentityResolver;
-use password_hash::PasswordHash;
+use password_hash::phc::PasswordHash;
 use serde_json::Value;
 use time::OffsetDateTime;
 use tracing::{debug, info_span, warn};
@@ -407,11 +407,12 @@ mod tests {
     /// argon2id hash of password "hunter2" with a fixed salt for
     /// test determinism. NOT for production use.
     fn alice_hash_argon2() -> String {
-        use argon2::password_hash::SaltString;
         use password_hash::PasswordHasher;
-        let salt = SaltString::from_b64("dGVzdHNhbHQwMDAwMDAw").unwrap();
         let argon = Argon2::default();
-        argon.hash_password(b"hunter2", &salt).unwrap().to_string()
+        argon
+            .hash_password_with_salt(b"hunter2", b"dGVzdHNhbHQwMDAwMDAw")
+            .unwrap()
+            .to_string()
     }
 
     fn alice_hash_bcrypt() -> String {
