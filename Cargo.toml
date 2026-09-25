@@ -1,6 +1,6 @@
 [package]
 name = "mcpg-plugin-identity-basic"
-version = "0.1.0-alpha.38"
+version = "0.1.0-alpha.39"
 license = "Apache-2.0"
 edition = "2024"
 description = "HTTP Basic auth identity plugin for MCPG gateway (dev.mcpg.identity.basic)"
@@ -9,8 +9,8 @@ description = "HTTP Basic auth identity plugin for MCPG gateway (dev.mcpg.identi
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-mcpg-plugin-protocol = { git = "https://github.com/mcpg-dev/mcpg-plugin-protocol", tag = "v0.1.0-beta.36", version = "=0.1.0-beta.36" }
-mcpg-plugin-sdk = { git = "https://github.com/mcpg-dev/mcpg-plugin-sdk", tag = "v0.1.0-beta.37", version = "=0.1.0-beta.37" }
+mcpg-plugin-protocol = { git = "https://github.com/mcpg-dev/mcpg-plugin-protocol", tag = "v0.1.0-beta.37", version = "=0.1.0-beta.37" }
+mcpg-plugin-sdk = { git = "https://github.com/mcpg-dev/mcpg-plugin-sdk", tag = "v0.1.0-beta.38", version = "=0.1.0-beta.38" }
 async-trait = "0.1"
 base64 = "0.23"
 metrics = "0.24"
